@@ -1,8 +1,10 @@
+require('dotenv').config();
+
 const Hapi = require('@hapi/hapi');
+const Jwt = require('@hapi/jwt');
 const ClientError = require('../../Commons/exceptions/ClientError');
 const DomainErrorTranslator = require('../../Commons/exceptions/DomainErrorTranslator');
-const users = require('../../Interfaces/http/api/users');
-const authentications = require('../../Interfaces/http/api/authentications');
+const plugins = require('./plugins');
 
 const createServer = async (container) => {
   const server = Hapi.server({
@@ -10,16 +12,28 @@ const createServer = async (container) => {
     port: process.env.PORT,
   });
 
-  await server.register([
-    {
-      plugin: users,
-      options: { container },
+  await server.register({
+    plugin: Jwt,
+  });
+
+  server.auth.strategy('forumapi_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
     },
-    {
-      plugin: authentications,
-      options: { container },
-    },
-  ]);
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+        username: artifacts.decoded.payload.username,
+      },
+    }),
+  });
+
+  await server.register(plugins(container));
 
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
@@ -50,6 +64,7 @@ const createServer = async (container) => {
         message: 'terjadi kegagalan pada server kami',
       });
       newResponse.code(500);
+      // console.log(response);
       return newResponse;
     }
 
