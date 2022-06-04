@@ -76,11 +76,9 @@ describe('/threads endpoint', () => {
 
       // Assert
       const threadResponseJson = JSON.parse(threadResponse.payload);
-      console.log(threadResponseJson);
+      // console.log(threadResponseJson);
       expect(threadResponse.statusCode).toEqual(401);
-      expect(threadResponseJson.status).toEqual('fail');
       expect(threadResponseJson.message).toBeDefined();
-      expect(threadResponseJson.message).not.toBeNull();
     });
 
     it('should response 400 when request payload not contain needed property', async () => {
@@ -106,7 +104,7 @@ describe('/threads endpoint', () => {
 
       const userResponseJson = JSON.parse(userResponse.payload);
       const { username, id } = userResponseJson.data.addedUser;
-      const jwtToken = jwtTokenManager.createAccessToken({ username, id });
+      const jwtToken = await jwtTokenManager.createAccessToken({ username, id });
 
       const threadResponse = await server.inject({
         method: 'POST',
