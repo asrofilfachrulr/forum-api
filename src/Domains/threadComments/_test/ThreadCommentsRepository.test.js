@@ -1,4 +1,4 @@
-const ThreadCommentsRepository = require('../ThreadCommentsRepository');
+const ThreadCommentsRepository = require('../ThreadCommentRepository');
 
 describe('ThreadCommentsRepository interface', () => {
   it('should throw error when invoke abstract behavior', async () => {

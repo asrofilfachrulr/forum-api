@@ -1,6 +1,6 @@
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const PostThreadComment = require('../../../Domains/threadComments/enttities/PostThreadComment');
-const ThreadCommentsRepository = require('../../../Domains/threadComments/ThreadCommentsRepository');
+const ThreadCommentsRepository = require('../../../Domains/threadComments/ThreadCommentRepository');
 const PostThreadCommentUseCase = require('../PostThreadCommentUseCase');
 
 describe('PostThreadCommentUseCase', () => {
