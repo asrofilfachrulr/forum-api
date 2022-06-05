@@ -13,6 +13,16 @@ const ThreadsTableTestHelper = {
     await pool.query(query);
   },
 
+  async getAll() {
+    const query = {
+      text: 'SELECT * FROM threads',
+    };
+
+    const result = await pool.query(query);
+
+    return result.rows;
+  },
+
   async cleanTable() {
     await pool.query('DELETE FROM threads WHERE 1=1');
   },

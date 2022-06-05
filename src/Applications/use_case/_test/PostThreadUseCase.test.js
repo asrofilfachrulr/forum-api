@@ -1,7 +1,7 @@
-const PostedThread = require('../../../Domains/thread/entities/PostedThread');
-const ThreadRepository = require('../../../Domains/thread/ThreadRepository');
+const PostedThread = require('../../../Domains/threads/entities/PostedThread');
+const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 const PostThreadUseCase = require('../PostThreadUseCase');
-const PostThread = require('../../../Domains/thread/entities/PostThread');
+const PostThread = require('../../../Domains/threads/entities/PostThread');
 
 describe('PostThreadUseCase', () => {
   it('should orchestrating the post thread action correctly', async () => {
