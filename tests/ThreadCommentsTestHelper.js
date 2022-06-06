@@ -5,8 +5,8 @@ const ThreadCommentsRepositoryTestHelper = {
     id, content, threadId, userId,
   }) {
     const query = {
-      text: 'INSERT INTO thread_comments VALUES($1, $2, $3, $4)',
-      values: [id, threadId, userId, content],
+      text: 'INSERT INTO thread_comments(id, thread_id, owner, content, date) VALUES ($1, $2, $3, $4, $5)',
+      values: [id, threadId, userId, content, new Date()],
     };
 
     await pool.query(query);
