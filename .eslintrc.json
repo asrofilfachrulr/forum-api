@@ -13,6 +13,8 @@
     },
     "rules": {
         "linebreak-style":"off",
-        "no-underscore-dangle": "off"
+        "no-underscore-dangle": "off",
+        "class-methods-use-this": "off",
+        "no-unused-vars": "warn"
     }
 }
