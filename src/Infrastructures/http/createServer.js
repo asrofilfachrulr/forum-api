@@ -45,6 +45,8 @@ const createServer = async (container) => {
 
       // penanganan client error secara internal.
       if (translatedError instanceof ClientError) {
+        // console.log(translatedError);
+
         const newResponse = h.response({
           status: 'fail',
           message: translatedError.message,

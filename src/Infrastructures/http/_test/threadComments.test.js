@@ -30,10 +30,14 @@ describe('/threads/{threadId}/comments endpoint', () => {
       body: 'halo guys',
       owner: 'user-123',
     });
-  });
 
-  afterEach(async () => {
-    await ThreadCommentsRepositoryTestHelper.cleanTable();
+    // create comment
+    await ThreadCommentsRepositoryTestHelper.addComment({
+      id: 'comment-xyz',
+      content: 'ieu comment',
+      threadId: 'thread-123',
+      userId: 'user-666',
+    });
   });
 
   afterAll(async () => {
@@ -137,6 +141,81 @@ describe('/threads/{threadId}/comments endpoint', () => {
         method: 'POST',
         url: '/threads/thread-93849214/comments',
         payload: requestPayload,
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+
+      // Assert
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
+    });
+  });
+  describe('when DELETE /threads/{threadId}/comments', () => {
+    it('should response 200 and deleted comment', async () => {
+      // Arrange
+      const commentId = 'comment-xyz';
+      const threadId = 'thread-123';
+
+      const server = await createServer(container);
+      const jwtTokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const jwtToken = await jwtTokenManager.createAccessToken({
+        username: 'meowmeow',
+        id: 'user-666',
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+
+      // Assert
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    });
+
+    it('should response 401 when request not contain valid authentication header', async () => {
+      // Arrange
+      const commentId = 'comment-xyz';
+      const threadId = 'thread-123';
+
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: { Authorization: 'Bearer iniJeWeTeTapiBoong' },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+
+      // Assert
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toBeDefined();
+    });
+
+    it('should response 404 if comment id is not exist', async () => {
+      // Arrange
+      const commentId = 'comment-zzzz';
+      const threadId = 'thread-123';
+
+      const server = await createServer(container);
+      const jwtTokenManager = container.getInstance(AuthenticationTokenManager.name);
+      const jwtToken = await jwtTokenManager.createAccessToken({
+        username: 'meowmeow',
+        id: 'user-666',
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
 

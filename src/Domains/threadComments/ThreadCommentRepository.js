@@ -3,6 +3,18 @@ class ThreadCommentsRepository {
   async addComment() {
     throw new Error('THREAD_COMMENTS_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
+
+  async deleteComment() {
+    throw new Error('THREAD_COMMENTS_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async verifyComment() {
+    throw new Error('THREAD_COMMENTS_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
+
+  async verifyCommentOwner() {
+    throw new Error('THREAD_COMMENTS_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
 }
 
 module.exports = ThreadCommentsRepository;

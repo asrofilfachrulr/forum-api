@@ -11,7 +11,7 @@ class UserRepositoryPostgres extends UserRepository {
 
   async verifyAvailableUsername(username) {
     const query = {
-      text: 'SELECT username FROM users WHERE username = $1',
+      text: 'SELECT username FROM users WHERE username = $1 LIMIT 1',
       values: [username],
     };
 
@@ -38,7 +38,7 @@ class UserRepositoryPostgres extends UserRepository {
 
   async getPasswordByUsername(username) {
     const query = {
-      text: 'SELECT password FROM users WHERE username = $1',
+      text: 'SELECT password FROM users WHERE username = $1 LIMIT 1',
       values: [username],
     };
 
@@ -53,7 +53,7 @@ class UserRepositoryPostgres extends UserRepository {
 
   async getIdByUsername(username) {
     const query = {
-      text: 'SELECT id FROM users WHERE username = $1',
+      text: 'SELECT id FROM users WHERE username = $1 LIMIT 1',
       values: [username],
     };
 

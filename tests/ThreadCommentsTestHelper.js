@@ -12,13 +12,24 @@ const ThreadCommentsRepositoryTestHelper = {
     await pool.query(query);
   },
 
-  async cleanTable() {
+  async getComment(commentId) {
     const query = {
-      text: 'DELETE FROM thread_comments WHERE 1=1',
+      text: 'SELECT id FROM thread_comments WHERE id = $1 AND deleted_at IS NULL LIMIT 1',
+      values: [commentId],
     };
 
-    await pool.query(query);
+    const result = await pool.query(query);
+
+    return result.rows[0];
   },
+
+  // async cleanTable() {
+  //   const query = {
+  //     text: 'DELETE FROM thread_comments WHERE 1=1',
+  //   };
+
+  //   await pool.query(query);
+  // },
 };
 
 module.exports = ThreadCommentsRepositoryTestHelper;
