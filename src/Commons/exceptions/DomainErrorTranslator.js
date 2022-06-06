@@ -19,6 +19,8 @@ DomainErrorTranslator._directories = {
   'DELETE_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('refresh token harus string'),
   'NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('data tidak lengkap'),
   'NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tipe data tidak sesuai (harus berupa string)'),
+  'POST_THREAD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('data tidak lengkap'),
+  'POST_THREAD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tipe data tidak sesuai'),
 };
 
 module.exports = DomainErrorTranslator;

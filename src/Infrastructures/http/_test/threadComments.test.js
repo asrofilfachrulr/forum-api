@@ -54,11 +54,10 @@ describe('/threads/{threadId}/comments endpoint', () => {
         username: 'meowmeow',
         id: 'user-666',
       });
-
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: 'threads/{threadId}/comments',
+        url: '/threads/thread-123/comments',
         payload: requestPayload,
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
@@ -66,11 +65,10 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const responseJson = JSON.parse(response.payload);
 
       // Assert
-      expect(responseJson.statusCode).toEqual(201);
+      expect(response.statusCode).toEqual(201);
       expect(responseJson.status).toEqual('success');
       expect(responseJson.data.addedComment).toBeDefined();
     });
-
     it('should response 401 when request not contain valid authentication header', async () => {
       // Arrange
       const requestPayload = {
@@ -82,7 +80,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: 'threads/thread-123/comments',
+        url: '/threads/thread-123/comments',
         payload: requestPayload,
         headers: { Authorization: 'Bearer iniBukanJwt' },
       });
@@ -90,9 +88,8 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const responseJson = JSON.parse(response.payload);
 
       // Assert
-      expect(responseJson.statusCode).toEqual(401);
+      expect(response.statusCode).toEqual(401);
       expect(responseJson.message).toBeDefined();
-      expect(responseJson.status).toEqual('failed');
     });
 
     it('should response 400 when request payload not contain needed property', async () => {
@@ -109,7 +106,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: 'threads/thread-123/comments',
+        url: '/threads/thread-123/comments',
         payload: requestPayload,
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
@@ -117,8 +114,8 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const responseJson = JSON.parse(response.payload);
 
       // Assert
-      expect(responseJson.statusCode).toEqual(400);
-      expect(responseJson.status).toEqual('failed');
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toBeDefined();
     });
 
@@ -138,7 +135,7 @@ describe('/threads/{threadId}/comments endpoint', () => {
       // Action
       const response = await server.inject({
         method: 'POST',
-        url: 'threads/thread-93849214/comments',
+        url: '/threads/thread-93849214/comments',
         payload: requestPayload,
         headers: { Authorization: `Bearer ${jwtToken}` },
       });
@@ -146,8 +143,8 @@ describe('/threads/{threadId}/comments endpoint', () => {
       const responseJson = JSON.parse(response.payload);
 
       // Assert
-      expect(responseJson.statusCode).toEqual(404);
-      expect(responseJson.status).toEqual('failed');
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
       expect(responseJson.message).toBeDefined();
     });
   });
