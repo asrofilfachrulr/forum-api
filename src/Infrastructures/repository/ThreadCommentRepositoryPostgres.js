@@ -16,8 +16,8 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentsRepository {
     const id = `comment-${this._idGenerator()}`;
 
     const query = {
-      text: 'INSERT INTO thread_comments VALUES ($1, $2, $3, $4) RETURNING id, content, owner',
-      values: [id, threadId, userId, content],
+      text: 'INSERT INTO thread_comments(id, thread_id, owner, content, date) VALUES ($1, $2, $3, $4, $5) RETURNING id, content, owner',
+      values: [id, threadId, userId, content, new Date()],
     };
 
     const result = await this._pool.query(query);
