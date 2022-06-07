@@ -6,6 +6,7 @@ const PostedThread = require('../../../Domains/threads/entities/PostedThread');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
 const RegisterUser = require('../../../Domains/users/entities/RegisterUser');
+const DetailThread = require('../../../Domains/threads/entities/DetailThread');
 
 describe('ThreadRepositoryPostgres', () => {
   beforeAll(async () => {
@@ -78,6 +79,39 @@ describe('ThreadRepositoryPostgres', () => {
         title: postThread.title,
         owner: postThread.id,
       }));
+    });
+  });
+
+  describe('getDetailThreadById function', () => {
+    it('should return DetailThread object from relations correctly', async () => {
+      // Arrange
+      const threadId = 'thread-123';
+      const date = new Date(86400000);
+
+      const thread = {
+        id: threadId,
+        title: '[A THREAD]',
+        body: 'kek gw tuh udh mlz bgt sm org org disekitar gueh',
+      };
+
+      await ThreadsTableTestHelper.addThread({
+        ...thread,
+        owner: 'user-123',
+        date,
+      });
+
+      const expectedDetailThread = new DetailThread({
+        ...thread,
+        username: 'dicoding',
+        date,
+      });
+
+      // Action
+      const repository = new ThreadRepositoryPostgres(pool, () => {});
+      const detailThread = await repository.getDetailThreadById(threadId);
+
+      // Assert
+      expect(detailThread).toStrictEqual(expectedDetailThread);
     });
   });
 });

@@ -1,5 +1,6 @@
 const AuthorizationError = require('../../Commons/exceptions/AuthorizationError');
 const NotFoundError = require('../../Commons/exceptions/NotFoundError');
+const DetailThreadComment = require('../../Domains/threadComments/enttities/DetailThreadComment');
 const PostedThreadComment = require('../../Domains/threadComments/enttities/PostedThreadComment');
 const ThreadCommentsRepository = require('../../Domains/threadComments/ThreadCommentRepository');
 
@@ -23,6 +24,19 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentsRepository {
     const result = await this._pool.query(query);
 
     return new PostedThreadComment({ ...result.rows[0] });
+  }
+
+  async getDetailCommentsByThreadId(threadId) {
+    const query = {
+      text: 'SELECT t.id, u.username, t.date, t.content, t.deleted_at FROM thread_comments t JOIN users u ON t.owner = u.id WHERE thread_id = $1 ORDER BY date ASC',
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    // console.log(result.rows);
+
+    return DetailThreadComment.mapperForClientResp(result.rows);
   }
 
   async deleteComment(commentId) {

@@ -9,6 +9,7 @@ const pool = require('../../database/postgres/pool');
 const PostedThreadComment = require('../../../Domains/threadComments/enttities/PostedThreadComment');
 const ThreadCommentsRepositoryTestHelper = require('../../../../tests/ThreadCommentsTestHelper');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const DetailThreadComment = require('../../../Domains/threadComments/enttities/DetailThreadComment');
 
 describe('ThreadCommentRepositoryPostgres', () => {
   beforeAll(async () => {
@@ -122,6 +123,61 @@ describe('ThreadCommentRepositoryPostgres', () => {
       // Action & Assert
       await expect(threadCommentRepositoryPostgres.verifyCommentOwner(userId, commentId))
         .rejects.toThrowError(AuthorizationError);
+    });
+  });
+
+  describe('getDetailCommentsByThreadId', () => {
+    it('should return list of DetailThreadComment object from relations correctly', async () => {
+    // Arrange
+      await ThreadCommentsRepositoryTestHelper.cleanTable();
+
+      const threadId = 'thread-123';
+      const dates = [
+        new Date('1-1-1960'),
+        new Date('1-2-1968'),
+        new Date('1-3-1979'),
+      ];
+
+      const comments = [
+        {
+          id: 'comment-123',
+          userId: 'user-123',
+          threadId: 'thread-123',
+          content: 'ieu comment',
+          date: dates[0],
+        },
+        {
+          id: 'comment-321',
+          userId: 'user-666',
+          threadId: 'thread-123',
+          content: 'ieu comment oge',
+          date: dates[1],
+          deleted_at: new Date(),
+        },
+        {
+          id: 'comment-69',
+          userId: 'user-666',
+          threadId: 'thread-123',
+          content: 'P P P',
+          date: dates[2],
+        },
+      ];
+
+      comments.forEach(async (comment) => { await ThreadCommentsRepositoryTestHelper.addComment(comment); });
+
+      comments[0].username = 'mamank';
+      comments[1].username = 'tahu';
+      comments[2].username = 'tahu';
+
+      const expectedListOfDetailThreadComments = DetailThreadComment.mapperForClientResp(comments);
+
+      const repository = new ThreadCommentsRepositoryPostgres(pool, () => {});
+
+      // Action
+      const listOfDetailThreadComments = await repository.getDetailCommentsByThreadId(threadId);
+
+      // Assert
+      expect(listOfDetailThreadComments).toStrictEqual(expectedListOfDetailThreadComments);
     });
   });
 

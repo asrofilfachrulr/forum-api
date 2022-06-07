@@ -28,6 +28,7 @@ const BcryptPasswordHash = require('./security/BcryptPasswordHash');
 const AddUserUseCase = require('../Applications/use_case/AddUserUseCase');
 const PostThreadUseCase = require('../Applications/use_case/PostThreadUseCase');
 const PostThreadCommentUseCase = require('../Applications/use_case/PostThreadCommentUseCase');
+const GetDetailThreadUseCase = require('../Applications/use_case/GetDetailThreadUseCase');
 const DeleteThreadCommentUseCase = require('../Applications/use_case/DeleteThreadCommentUseCase');
 const AuthenticationTokenManager = require('../Applications/security/AuthenticationTokenManager');
 const JwtTokenManager = require('./security/JwtTokenManager');
@@ -154,6 +155,23 @@ container.register([
   {
     key: PostThreadCommentUseCase.name,
     Class: PostThreadCommentUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+        {
+          name: 'threadCommentRepository',
+          internal: ThreadCommentRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: GetDetailThreadUseCase.name,
+    Class: GetDetailThreadUseCase,
     parameter: {
       injectType: 'destructuring',
       dependencies: [

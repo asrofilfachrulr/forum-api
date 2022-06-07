@@ -1,10 +1,8 @@
-const DetailThreadComment = require('../../threadComments/enttities/DetailThreadComment');
-
 class DetailThread {
   constructor(payload) {
     this._verifyPayload(payload);
     const {
-      id, title, body, date, username, comments,
+      id, title, body, date, username,
     } = payload;
 
     this.id = id;
@@ -12,15 +10,18 @@ class DetailThread {
     this.body = body;
     this.date = date;
     this.username = username;
+  }
+
+  setComments(comments) {
     this.comments = comments;
   }
 
   _verifyPayload(payload) {
     const {
-      id, title, body, date, username, comments,
+      id, title, body, date, username,
     } = payload;
 
-    if (!id || !title || !body || !date || !username || !comments) {
+    if (!id || !title || !body || !date || !username) {
       throw new Error('DETAIL_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
@@ -29,15 +30,9 @@ class DetailThread {
       || typeof title !== 'string'
       || typeof body !== 'string'
       || typeof date !== 'object'
-      || typeof username !== 'string'
-      || !Array.isArray(comments)) {
+      || typeof username !== 'string') {
       throw new Error('DETAIL_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
-    comments.forEach((comment) => {
-      if (!(comment instanceof DetailThreadComment)) {
-        throw new Error('DETAIL_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
-      }
-    });
   }
 }
 

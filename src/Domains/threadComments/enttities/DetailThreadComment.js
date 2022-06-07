@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 class DetailThreadComment {
   constructor(payload) {
     this._verifyPayload(payload);
@@ -24,6 +25,22 @@ class DetailThreadComment {
       typeof id !== 'string' || typeof date !== 'object' || typeof username !== 'string' || typeof content !== 'string') {
       throw new Error('DETAIL_THREAD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
+  }
+
+  static mapperForClientResp(comments) {
+    return comments.map((comment) => {
+      const {
+        id, date, username, content, deleted_at,
+      } = comment;
+
+      const fixedContent = deleted_at ? '**komentar telah dihapus**' : content;
+      return new DetailThreadComment({
+        id,
+        date,
+        username,
+        content: fixedContent,
+      });
+    });
   }
 }
 
