@@ -27,6 +27,15 @@ class DetailThreadComment {
     }
   }
 
+  rest() {
+    return {
+      id: this.id,
+      date: this.date,
+      username: this.username,
+      content: this.content,
+    };
+  }
+
   static mapperForClientResp(comments) {
     return comments.map((comment) => {
       const {

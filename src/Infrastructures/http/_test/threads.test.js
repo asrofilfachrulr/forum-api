@@ -1,9 +1,12 @@
 const ThreadsTableTestHelper = require('../../../../tests/ThreadsTableTestHelper');
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
+const ThreadCommentsRepositoryTestHelper = require('../../../../tests/ThreadCommentsTestHelper');
 const AuthenticationTokenManager = require('../../../Applications/security/AuthenticationTokenManager');
 const container = require('../../container');
 const pool = require('../../database/postgres/pool');
 const createServer = require('../createServer');
+const DetailThread = require('../../../Domains/threads/entities/DetailThread');
+const DetailThreadComment = require('../../../Domains/threadComments/enttities/DetailThreadComment');
 
 describe('/threads endpoint', () => {
   afterAll(async () => {
@@ -11,7 +14,6 @@ describe('/threads endpoint', () => {
   });
 
   afterEach(async () => {
-    await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
   });
 
@@ -51,8 +53,6 @@ describe('/threads endpoint', () => {
 
       const threadResponseJson = JSON.parse(threadResponse.payload);
 
-      // console.log(threadResponseJson);
-
       // Assert
       expect(threadResponse.statusCode).toEqual(201);
       expect(threadResponseJson.status).toEqual('success');
@@ -76,7 +76,6 @@ describe('/threads endpoint', () => {
 
       // Assert
       const threadResponseJson = JSON.parse(threadResponse.payload);
-      // console.log(threadResponseJson);
       expect(threadResponse.statusCode).toEqual(401);
       expect(threadResponseJson.message).toBeDefined();
     });
@@ -160,6 +159,103 @@ describe('/threads endpoint', () => {
       expect(threadResponseJson.status).toEqual('fail');
       expect(threadResponseJson.message).toBeDefined();
       expect(threadResponseJson.message).not.toBeNull();
+    });
+  });
+
+  describe('when GET /threads/{threadId}', () => {
+    it('should response 200 and return detail thread correctly', async () => {
+      // Arrange
+      await UsersTableTestHelper.addUser(
+        {
+          id: 'user-123',
+          username: 'mamank',
+          password: 'gar0x',
+          fullname: 'Tepung Beras Rosebrand',
+        },
+      );
+
+      await UsersTableTestHelper.addUser(
+        {
+          id: 'user-666',
+          username: 'tahu',
+          password: 'bul4t',
+          fullname: 'Digoreng Dadakan',
+        },
+      );
+
+      const thread = {
+        id: 'thread-123',
+        title: 'ieu judul',
+        body: 'ieu body,',
+      };
+
+      const date = new Date('1-1-1970');
+
+      // Post a thread with registered user
+      await ThreadsTableTestHelper.addThread(
+        {
+          ...thread,
+          owner: 'user-123',
+          date,
+        },
+      );
+
+      const threadId = 'thread-123';
+      const dates = [
+        new Date('1-1-1960'),
+        new Date('1-2-1968'),
+        new Date('1-3-1979'),
+      ];
+
+      const comments = [
+        {
+          id: 'comment-321',
+          userId: 'user-666',
+          threadId: 'thread-123',
+          content: 'ieu comment oge',
+          date: dates[1],
+          deleted_at: new Date(),
+        },
+      ];
+
+      comments.forEach(async (comment) => {
+        await ThreadCommentsRepositoryTestHelper.addComment(comment);
+      });
+
+      comments[0].username = 'tahu';
+
+      const expectedListOfDetailThreadComments = DetailThreadComment
+        .mapperForClientResp(comments)
+        .map((c) => c.rest());
+
+      const expectedDetailThread = new DetailThread({
+        ...thread,
+        username: 'mamank',
+        date,
+      });
+
+      expectedDetailThread.date = expectedDetailThread.date.toJSON();
+      expectedListOfDetailThreadComments.forEach((comment) => {
+        // eslint-disable-next-line no-param-reassign
+        comment.date = comment.date.toJSON();
+      });
+      const expectedCompleteDetailThread = {
+        ...expectedDetailThread,
+        comments: expectedListOfDetailThreadComments,
+      };
+
+      // Action
+      const server = await createServer(container);
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`,
+      });
+      const responseJson = JSON.parse(response.payload);
+
+      // Assert
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toEqual(expectedCompleteDetailThread);
     });
   });
 });
