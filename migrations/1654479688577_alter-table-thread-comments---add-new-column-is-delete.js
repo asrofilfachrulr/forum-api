@@ -2,13 +2,13 @@
 
 exports.up = (pgm) => {
   pgm.addColumn('thread_comments', {
-    deleted_at: {
-      type: 'datetime',
+    is_delete: {
+      type: 'boolean',
       notNull: false,
     },
   });
 };
 
 exports.down = (pgm) => {
-  pgm.dropColumn('thread_comments', 'deleted_at');
+  pgm.dropColumn('thread_comments', 'is_delete');
 };

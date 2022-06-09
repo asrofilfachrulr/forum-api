@@ -43,4 +43,80 @@ describe('DetailThreadComment entitites', () => {
     expect(detailThreadComment.username).toEqual(payload.username);
     expect(detailThreadComment.date).toEqual(payload.date);
   });
+
+  it('should return correct Object using rest function from a DetailThread instance', () => {
+    // Arrange
+    const date = new Date();
+
+    const payload = {
+      id: 'comment-123',
+      content: 'ieu teh comment',
+      username: 'miawmiaw',
+      date,
+    };
+
+    const detailThreadComment = new DetailThreadComment(payload);
+
+    // Action
+    const restFromDetailThread = detailThreadComment.rest();
+
+    // Assert
+    expect(restFromDetailThread).toStrictEqual({
+      id: 'comment-123',
+      content: 'ieu teh comment',
+      username: 'miawmiaw',
+      date,
+    });
+  });
+
+  it('should mapping object and create new DetailThread object correctly', () => {
+    // Arrange
+    const dates = [new Date('1999'), new Date('2002'), new Date('2005')];
+    const payload = [
+      {
+        id: 'comments-123',
+        date: dates[0],
+        username: 'anya',
+        content: 'ieu comment',
+        is_delete: false,
+      },
+      {
+        id: 'comments-124',
+        date: dates[1],
+        username: 'anya',
+        content: 'ieu comment oge',
+        is_delete: true,
+      },
+      {
+        id: 'comments-125',
+        date: dates[2],
+        username: 'fuji',
+        content: 'ieu comment lainna',
+        is_delete: false,
+      },
+    ];
+
+    // Action
+    const mappedObject = DetailThreadComment.mapperForClientResp(payload);
+
+    // Assert
+    expect(mappedObject[0]).toStrictEqual(new DetailThreadComment({
+      id: 'comments-123',
+      date: dates[0],
+      username: 'anya',
+      content: 'ieu comment',
+    }));
+    expect(mappedObject[1]).toStrictEqual(new DetailThreadComment({
+      id: 'comments-124',
+      date: dates[1],
+      username: 'anya',
+      content: '**komentar telah dihapus**',
+    }));
+    expect(mappedObject[2]).toStrictEqual(new DetailThreadComment({
+      id: 'comments-125',
+      date: dates[2],
+      username: 'fuji',
+      content: 'ieu comment lainna',
+    }));
+  });
 });

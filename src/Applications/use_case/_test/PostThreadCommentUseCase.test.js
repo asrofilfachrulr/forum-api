@@ -24,7 +24,11 @@ describe('PostThreadCommentUseCase', () => {
 
     mockThreadRepository.verifyThread = jest.fn().mockImplementation(() => Promise.resolve());
     mockThreadCommentRepository.addComment = jest.fn().mockImplementation(
-      () => Promise.resolve(expectedPostedThreadComment),
+      () => Promise.resolve(new PostedThreadComment({
+        id: 'comment-123',
+        content: 'ieu content teh',
+        owner: 'user-123',
+      })),
     );
 
     const postThreadCommentUseCase = new PostThreadCommentUseCase({
@@ -36,11 +40,7 @@ describe('PostThreadCommentUseCase', () => {
     const postedThreadComment = await postThreadCommentUseCase.execute(useCasePayload);
 
     // Assert
-    expect(postedThreadComment).toStrictEqual(new PostedThreadComment({
-      id: 'comment-123',
-      content: 'ieu content teh',
-      owner: 'user-123',
-    }));
+    expect(postedThreadComment).toStrictEqual(expectedPostedThreadComment);
     expect(mockThreadRepository.verifyThread).toBeCalledWith(useCasePayload.threadId);
     expect(mockThreadCommentRepository.addComment)
       .toBeCalledWith(new PostThreadComment({

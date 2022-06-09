@@ -1,13 +1,14 @@
+/* istanbul ignore file */
 /* eslint-disable camelcase */
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const ThreadCommentsRepositoryTestHelper = {
   async addComment({
-    id, content, threadId, userId, date = new Date(), deleted_at = null,
+    id, content, threadId, userId, date = new Date(), is_delete = false,
   }) {
     const query = {
-      text: 'INSERT INTO thread_comments(id, thread_id, owner, content, date, deleted_at) VALUES ($1, $2, $3, $4, $5, $6)',
-      values: [id, threadId, userId, content, date, deleted_at],
+      text: 'INSERT INTO thread_comments(id, thread_id, owner, content, date, is_delete) VALUES ($1, $2, $3, $4, $5, $6)',
+      values: [id, threadId, userId, content, date, is_delete],
     };
 
     await pool.query(query);
@@ -15,13 +16,13 @@ const ThreadCommentsRepositoryTestHelper = {
 
   async getComment(commentId) {
     const query = {
-      text: 'SELECT id FROM thread_comments WHERE id = $1 AND deleted_at IS NULL LIMIT 1',
+      text: 'SELECT * FROM thread_comments WHERE id = $1 AND (is_delete = false OR is_delete IS NULL)',
       values: [commentId],
     };
 
     const result = await pool.query(query);
 
-    return result.rows[0];
+    return result.rows;
   },
 
   async cleanTable() {

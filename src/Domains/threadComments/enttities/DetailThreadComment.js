@@ -39,10 +39,10 @@ class DetailThreadComment {
   static mapperForClientResp(comments) {
     return comments.map((comment) => {
       const {
-        id, date, username, content, deleted_at,
+        id, date, username, content, is_delete,
       } = comment;
 
-      const fixedContent = deleted_at ? '**komentar telah dihapus**' : content;
+      const fixedContent = is_delete ? '**komentar telah dihapus**' : content;
       return new DetailThreadComment({
         id,
         date,

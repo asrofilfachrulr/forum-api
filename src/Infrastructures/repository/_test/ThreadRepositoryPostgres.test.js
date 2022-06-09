@@ -79,6 +79,8 @@ describe('ThreadRepositoryPostgres', () => {
         title: postThread.title,
         owner: postThread.id,
       }));
+
+      await expect(ThreadsTableTestHelper.get('thread-123')).resolves.toHaveLength(1);
     });
   });
 

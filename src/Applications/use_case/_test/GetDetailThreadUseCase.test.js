@@ -28,7 +28,7 @@ describe('GetDetailThreadUseCase', () => {
       id: 'thread-123',
       title: 'sebuah thread',
       body: 'sebuah body thread',
-      date: new Date(),
+      date: new Date('2012'),
       username: 'dicodingdingding',
     });
 
@@ -47,14 +47,14 @@ describe('GetDetailThreadUseCase', () => {
               id: 'comment-123',
               username: 'joemama',
               date: new Date('2015-03-25T12:00:00Z'),
-              deleted_at: null,
+              is_delete: false,
               content: 'sebuah komen',
             }),
             new DetailThreadComment({
               id: 'comment-345',
               username: 'dicodingdingding',
               date: new Date('2015-03-25T12:00:12Z'),
-              deleted_at: new Date(),
+              is_delete: true,
               content: '**komentar telah dihapus**',
             }),
           ];
@@ -63,7 +63,13 @@ describe('GetDetailThreadUseCase', () => {
       );
     mockThreadRepository.getDetailThreadById = jest.fn()
       .mockImplementation(
-        () => Promise.resolve(expectedDetailThread),
+        () => Promise.resolve(new DetailThread({
+          id: 'thread-123',
+          title: 'sebuah thread',
+          body: 'sebuah body thread',
+          date: new Date('2012'),
+          username: 'dicodingdingding',
+        })),
       );
 
     const getDetailThreadUseCase = new GetDetailThreadUseCase({

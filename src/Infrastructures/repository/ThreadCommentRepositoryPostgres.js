@@ -28,21 +28,21 @@ class ThreadCommentRepositoryPostgres extends ThreadCommentsRepository {
 
   async getDetailCommentsByThreadId(threadId) {
     const query = {
-      text: 'SELECT t.id, u.username, t.date, t.content, t.deleted_at FROM thread_comments t JOIN users u ON t.owner = u.id WHERE thread_id = $1 ORDER BY date ASC',
+      text: 'SELECT t.id, u.username, t.date, t.content, t.is_delete FROM thread_comments t JOIN users u ON t.owner = u.id WHERE thread_id = $1 ORDER BY date ASC',
       values: [threadId],
     };
 
     const result = await this._pool.query(query);
 
-    // console.log(result.rows);
+    // console.log(result);
 
     return DetailThreadComment.mapperForClientResp(result.rows);
   }
 
   async deleteComment(commentId) {
     const query = {
-      text: 'UPDATE thread_comments SET deleted_at = $1 WHERE id = $2',
-      values: [new Date(), commentId],
+      text: 'UPDATE thread_comments SET is_delete = true WHERE id = $1',
+      values: [commentId],
     };
 
     await this._pool.query(query);

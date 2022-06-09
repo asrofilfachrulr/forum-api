@@ -16,7 +16,7 @@ describe('DeleteThreadCommentUseCase', () => {
     mockThreadCommentRepository.verifyCommentOwner = jest.fn()
       .mockImplementation(() => Promise.resolve());
     mockThreadCommentRepository.deleteComment = jest.fn()
-      .mockImplementation(() => Promise.resolve);
+      .mockImplementation(() => Promise.resolve());
 
     // Action
     const deleteThreadCommentUseCase = new DeleteThreadCommentUseCase({
@@ -25,5 +25,9 @@ describe('DeleteThreadCommentUseCase', () => {
 
     // Action + Assert
     await expect(deleteThreadCommentUseCase.execute(useCasePayload)).resolves.not.toThrowError();
+    expect(mockThreadCommentRepository.verifyComment).toBeCalledWith(useCasePayload.commentId);
+    expect(mockThreadCommentRepository.verifyCommentOwner)
+      .toBeCalledWith(useCasePayload.userId, useCasePayload.commentId);
+    expect(mockThreadCommentRepository.deleteComment).toBeCalledWith(useCasePayload.commentId);
   });
 });

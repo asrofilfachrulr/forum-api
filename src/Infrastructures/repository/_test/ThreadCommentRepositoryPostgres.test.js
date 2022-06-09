@@ -78,6 +78,8 @@ describe('ThreadCommentRepositoryPostgres', () => {
         content: 'ieu comment teh',
         owner: 'user-666',
       }));
+
+      await expect(ThreadCommentsRepositoryTestHelper.getComment('comment-123')).resolves.toHaveLength(1);
     });
   });
 
@@ -126,11 +128,26 @@ describe('ThreadCommentRepositoryPostgres', () => {
     });
   });
 
+  describe('deleteComment function', () => {
+    it('should delete thread comment correctly', async () => {
+      // Arrange
+      const id = 'comment-987';
+
+      const threadCommentRepositoryPostgres = new ThreadCommentsRepositoryPostgres(pool, () => {});
+
+      // Action
+      await threadCommentRepositoryPostgres.deleteComment(id);
+
+      // Assert
+      const result = await ThreadCommentsRepositoryTestHelper.getComment(id);
+      expect(result).toHaveLength(0);
+    });
+  });
+
   describe('getDetailCommentsByThreadId', () => {
     it('should return list of DetailThreadComment object from relations correctly', async () => {
-    // Arrange
       await ThreadCommentsRepositoryTestHelper.cleanTable();
-
+      // Arrange
       const threadId = 'thread-123';
       const dates = [
         new Date('1-1-1960'),
@@ -163,7 +180,9 @@ describe('ThreadCommentRepositoryPostgres', () => {
         },
       ];
 
-      comments.forEach(async (comment) => { await ThreadCommentsRepositoryTestHelper.addComment(comment); });
+      await ThreadCommentsRepositoryTestHelper.addComment(comments[0]);
+      await ThreadCommentsRepositoryTestHelper.addComment(comments[1]);
+      await ThreadCommentsRepositoryTestHelper.addComment(comments[2]);
 
       comments[0].username = 'mamank';
       comments[1].username = 'tahu';
@@ -175,25 +194,8 @@ describe('ThreadCommentRepositoryPostgres', () => {
 
       // Action
       const listOfDetailThreadComments = await repository.getDetailCommentsByThreadId(threadId);
-
       // Assert
       expect(listOfDetailThreadComments).toStrictEqual(expectedListOfDetailThreadComments);
-    });
-  });
-
-  describe('deleteComment function', () => {
-    it('should delete thread comment correctly', async () => {
-      // Arrange
-      const id = 'comment-987';
-
-      const threadCommentRepositoryPostgres = new ThreadCommentsRepositoryPostgres(pool, () => {});
-
-      // Action
-      await threadCommentRepositoryPostgres.deleteComment(id);
-
-      // Assert
-      const result = await ThreadCommentsRepositoryTestHelper.getComment(id);
-      expect(result).toBeUndefined();
     });
   });
 });
