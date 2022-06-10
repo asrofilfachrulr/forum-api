@@ -35,6 +35,14 @@ const createServer = async (container) => {
 
   await server.register(plugins(container));
 
+  server.route({
+    method: 'GET',
+    path: '/',
+    handler: () => ({
+      value: 'Hello teteh!',
+    }),
+  });
+
   server.ext('onPreResponse', (request, h) => {
     // mendapatkan konteks response dari request
     const { response } = request;
